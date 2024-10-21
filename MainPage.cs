@@ -67,6 +67,7 @@ namespace BackupSoftware
 
 
                         readDestPaths.AddRange(readLines.GetRange(regStartIndex, regEndIndex - regStartIndex));
+                        DESTPATH = readDestPaths[0];
                     }
                     else
                     {
@@ -78,7 +79,7 @@ namespace BackupSoftware
 
                     SourcePaths.AddRange(readSourcePaths);
                     SourceComboBox.Items.AddRange(SourcePaths.ToArray());
-                    DestinationTextBox.Text = readDestPaths[0];
+                    DestinationTextBox.Text = DESTPATH;
                 }
                 else
                 {
@@ -178,9 +179,19 @@ namespace BackupSoftware
                     return;
                 }
 
+                if (SourceComboBox.Text == DESTPATH)
+                {
+                    MessageBox.Show("can not back up folder into itself", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    SourceComboBox.Text = "";
+
+                    return;
+                }
+
+
 
 
                 SourceComboBox.Items.Add(SourceComboBox.Text);
+                SourcePaths.Add(SourceComboBox.Text);
                 SourceComboBox.Text = "";
             }
         }
@@ -210,11 +221,11 @@ namespace BackupSoftware
                 if (SourcePaths.Contains(DestinationTextBox.Text))
                 {
                     MessageBox.Show("You cant backup into an already backed up directory", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    SourceComboBox.Text = "";
+                    DestinationTextBox.Text = "";
 
                     return;
                 }
-
+                // TODO: add more validation to check if subfolder of any folder is being backed up into it's parent
                 DESTPATH = DestinationTextBox.Text;
             }
         }
