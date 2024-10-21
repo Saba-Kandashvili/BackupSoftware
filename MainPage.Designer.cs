@@ -31,6 +31,7 @@
             SourceComboBox = new ComboBox();
             DestinationTextBox = new TextBox();
             RemoveDirButton = new Button();
+            BackupButton = new Button();
             SuspendLayout();
             // 
             // SourceComboBox
@@ -41,6 +42,7 @@
             SourceComboBox.Size = new Size(244, 23);
             SourceComboBox.TabIndex = 0;
             SourceComboBox.SelectedIndexChanged += SourceComboBox_SelectedIndexChanged;
+            SourceComboBox.Click += SourceComboBox_Click;
             SourceComboBox.KeyDown += SourceComboBox_KeyDown;
             // 
             // DestinationTextBox
@@ -49,6 +51,7 @@
             DestinationTextBox.Name = "DestinationTextBox";
             DestinationTextBox.Size = new Size(244, 23);
             DestinationTextBox.TabIndex = 1;
+            DestinationTextBox.Click += DestinationTextBox_Click;
             DestinationTextBox.KeyDown += DestinationTextBox_KeyDown;
             // 
             // RemoveDirButton
@@ -61,11 +64,22 @@
             RemoveDirButton.UseVisualStyleBackColor = true;
             RemoveDirButton.Click += RemoveDirButton_Click;
             // 
+            // BackupButton
+            // 
+            BackupButton.Location = new Point(645, 209);
+            BackupButton.Name = "BackupButton";
+            BackupButton.Size = new Size(91, 91);
+            BackupButton.TabIndex = 3;
+            BackupButton.Text = "Backup";
+            BackupButton.UseVisualStyleBackColor = true;
+            BackupButton.Click += BackupButton_Click;
+            // 
             // MainPage
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(BackupButton);
             Controls.Add(RemoveDirButton);
             Controls.Add(DestinationTextBox);
             Controls.Add(SourceComboBox);
@@ -82,5 +96,6 @@
         private ComboBox SourceComboBox;
         private TextBox DestinationTextBox;
         private Button RemoveDirButton;
+        private Button BackupButton;
     }
 }

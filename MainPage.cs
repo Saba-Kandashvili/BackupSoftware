@@ -11,10 +11,10 @@ namespace BackupSoftware
         public static List<string> SourcePaths = new List<string>();
         public static string DESTPATH;
 
-        public static readonly string START_SOURCE = "#START_SOURCE:";
+        public static readonly string START_SOURCE = "#START_SOURCE";
         public static readonly string END_SOURCE = "#END_SOURCE";
 
-        public static readonly string START_DEST = "#START_DEST:";
+        public static readonly string START_DEST = "#START_DEST";
         public static readonly string END_DEST = "#END_DEST";
 
 
@@ -239,6 +239,25 @@ namespace BackupSoftware
             }
         }
 
+        private void SourceComboBox_Click(object sender, EventArgs e)
+        {
+            using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog())
+            {
+                folderBrowserDialog.Description = "Select a Directory to Backup";
+                folderBrowserDialog.ShowNewFolderButton = true;
+
+                // Show the dialog and get the result
+                DialogResult result = folderBrowserDialog.ShowDialog();
+
+                if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(folderBrowserDialog.SelectedPath))
+                {
+                    string selectedPath = folderBrowserDialog.SelectedPath;
+
+                    SourceComboBox.Text = selectedPath;
+                }
+            }
+        }
+
         private void RemoveDirButton_Click(object sender, EventArgs e)
         {
             SourcePaths.Remove(SourceComboBox.Text);
@@ -249,5 +268,89 @@ namespace BackupSoftware
 
         }
 
+        private void BackupButton_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(DESTPATH))
+            {
+                MessageBox.Show("Please specify a destination path.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            BackupAllSourcePaths();
+        }
+
+        private void CopyDirectory(string sourceDir, string destDir)
+        {
+            DirectoryInfo source = new DirectoryInfo(sourceDir);
+            DirectoryInfo dest = new DirectoryInfo(destDir);
+
+            if (!source.Exists)
+            {
+                MessageBox.Show("source directory doesn't exist. exiting immediately to avoid a catastrophe", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Application.Exit();
+                return;
+            }
+
+            if (!dest.Exists) // TODO: fix this
+            {
+                MessageBox.Show("destination directory doesn't exist. exiting immediately to avoid a catastrophe", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Application.Exit();
+                return;
+            }
+
+            // Copy all files
+            foreach (FileInfo file in source.GetFiles())
+            {
+                string tempPath = Path.Combine(destDir, file.Name);
+                using (FileStream sourceStream = file.OpenRead())
+                using (FileStream destStream = File.Create(tempPath))
+                {
+                    sourceStream.CopyTo(destStream);
+                }
+            }
+
+            // Copy all subdirectories
+            foreach (DirectoryInfo subdir in source.GetDirectories())
+            {
+                string tempPath = Path.Combine(destDir, subdir.Name);
+                CopyDirectory(subdir.FullName, tempPath);
+            }
+        }
+
+        private void BackupAllSourcePaths()
+        {
+            try
+            {
+                foreach (string sourcePath in SourcePaths)
+                {
+                    string destinationPath = Path.Combine(DESTPATH, new DirectoryInfo(sourcePath).Name);
+                    CopyDirectory(sourcePath, destinationPath);
+                }
+
+                MessageBox.Show("Backup completed successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred during backup: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void DestinationTextBox_Click(object sender, EventArgs e)
+        {
+            using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog())
+            {
+                folderBrowserDialog.Description = "Select Destination Directory";
+
+                // Show the dialog and get the result
+                DialogResult result = folderBrowserDialog.ShowDialog();
+
+                if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(folderBrowserDialog.SelectedPath))
+                {
+                    // Set the selected folder path to the DestinationTextBox
+                    DestinationTextBox.Text = folderBrowserDialog.SelectedPath;
+
+                }
+            }
+        }
     }
 }
