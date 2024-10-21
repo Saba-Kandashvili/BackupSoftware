@@ -7,8 +7,17 @@ namespace BackupSoftware
             InitializeComponent();
         }
 
-        public static string CONFIG = String.Join(@"\", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackerUpper", "init.ini");
+        public static readonly string CONFIG = String.Join(@"\", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackerUpper", "init.ini");
         public static List<string> SourcePaths = new List<string>();
+        public static string DESTPATH;
+
+        public static readonly string START_SOURCE = "#START_SOURCE:";
+        public static readonly string END_SOURCE = "#END_SOURCE";
+
+        public static readonly string START_DEST = "#START_DEST:";
+        public static readonly string END_DEST = "#END_DEST";
+
+
 
         private void MainPage_Load(object sender, EventArgs e)
         {
@@ -16,8 +25,60 @@ namespace BackupSoftware
             {
                 if (File.Exists(CONFIG))
                 {
-                    SourcePaths.AddRange(File.ReadAllLines(CONFIG));
+                    List<string> readLines = File.ReadLines(CONFIG).ToList();
+                    List<string> readSourcePaths = new List<string>();
+                    List<string> readDestPaths = new List<string>();
+
+
+                    if (readLines.Contains(START_SOURCE))
+                    {
+                        int regStartIndex = readLines.IndexOf(START_SOURCE) + 1;
+                        int regEndIndex = readLines.IndexOf(END_SOURCE);
+
+                        if (regStartIndex == -1 || regEndIndex == -1)
+                        { // TODO: maybe add am option to delete it from this dialog
+                            MessageBox.Show($"config file is corrupted. delete it\nfile at: {CONFIG}\nend region not found for source", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            Application.Exit(); // close the program to avoid doing anything stupid
+                            return; // idk if this is necessary
+                        }
+
+
+                        readSourcePaths.AddRange(readLines.GetRange(regStartIndex, regEndIndex - regStartIndex));
+                    }
+                    else
+                    {
+                        MessageBox.Show($"config file is corrupted. delete it\nfile at: {CONFIG}\nnot valid region definitions", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        Application.Exit(); // close the program to avoid doing anything stupid
+                        return; // idk if this is necessary
+                    }
+
+
+                    if (readLines.Contains(START_DEST))
+                    {
+                        int regStartIndex = readLines.IndexOf(START_DEST) + 1;
+                        int regEndIndex = readLines.IndexOf(END_DEST);
+
+                        if (regStartIndex == -1 || regEndIndex == -1)
+                        { // TODO: maybe add am option to delete it from this dialog
+                            MessageBox.Show($"config file is corrupted. delete it\nfile at: {CONFIG}\nend region not found for destination", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            Application.Exit(); // close the program to avoid doing anything stupid
+                            return; // idk if this is necessary
+                        }
+
+
+                        readDestPaths.AddRange(readLines.GetRange(regStartIndex, regEndIndex - regStartIndex));
+                    }
+                    else
+                    {
+                        MessageBox.Show($"config file is corrupted. delete it\nfile at: {CONFIG}\nnot valid region definitions", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        Application.Exit(); // close the program to avoid doing anything stupid
+                        return; // idk if this is necessary
+                    }
+
+
+                    SourcePaths.AddRange(readSourcePaths);
                     SourceComboBox.Items.AddRange(SourcePaths.ToArray());
+                    DestinationTextBox.Text = readDestPaths[0];
                 }
                 else
                 {
@@ -45,22 +106,47 @@ namespace BackupSoftware
             }
 
             List<string> readLines = File.ReadAllLines(CONFIG).ToList();
+            List<string> readSourcePaths = new List<string>();
+
+            if (readLines.Contains(START_SOURCE))
+            {
+                int regStartIndex = readLines.IndexOf(START_SOURCE) + 1;
+                int regEndIndex = readLines.IndexOf(END_SOURCE);
+
+                if (regStartIndex == -1 || regEndIndex == -1)
+                { // TODO: maybe add am option to delete it from this dialog
+                    MessageBox.Show($"config file is corrupted. delete it\nfile at: {CONFIG}\nend region not found for source", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Application.Exit(); // close the program to avoid doing anything stupid
+                    return; // idk if this is necessary
+                }
+
+
+                readSourcePaths.AddRange(readLines.GetRange(regStartIndex, regEndIndex - regStartIndex));
+            }
+
 
             foreach (string line in SourcePaths)
             {
-                int ind = readLines.IndexOf(line);
+                int ind = readSourcePaths.IndexOf(line);
                 if (ind != -1)
                 {
-                    readLines.RemoveAt(ind);
+                    readSourcePaths.RemoveAt(ind);
                 }
             }
 
             using (StreamWriter configSaver = new StreamWriter(CONFIG))
             {
+
+                configSaver.WriteLine(START_SOURCE);
                 foreach (string path in SourcePaths)
                 {
                     configSaver.WriteLine(path);
                 }
+                configSaver.WriteLine(END_SOURCE);
+
+                configSaver.WriteLine(START_DEST);
+                configSaver.WriteLine(DESTPATH);
+                configSaver.WriteLine(END_DEST);
             }
         }
 
@@ -128,6 +214,8 @@ namespace BackupSoftware
 
                     return;
                 }
+
+                DESTPATH = DestinationTextBox.Text;
             }
         }
 
