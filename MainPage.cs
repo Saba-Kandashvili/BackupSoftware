@@ -29,6 +29,10 @@ namespace BackupSoftware
                 Directory.CreateDirectory(Path.GetDirectoryName(CONFIG));
                 using (File.Create(CONFIG)) { }
             }
+
+
+            RemoveDirButton.Visible = false;
+            RemoveDirButton.Enabled = false;
         }
 
         private void MainPage_FormClosing(object sender, FormClosingEventArgs e)
@@ -40,18 +44,18 @@ namespace BackupSoftware
                 SourcePaths.Add(path);
             }
 
-            string[] readLines = File.ReadAllLines(CONFIG);
+            List<string> readLines = File.ReadAllLines(CONFIG).ToList();
 
-            foreach (string line in readLines)
+            foreach (string line in SourcePaths)
             {
-                int ind = SourcePaths.IndexOf(line);
+                int ind = readLines.IndexOf(line);
                 if (ind != -1)
                 {
-                    SourcePaths.RemoveAt(ind);
+                    readLines.RemoveAt(ind);
                 }
             }
 
-            using (StreamWriter configSaver = new StreamWriter(CONFIG, true))
+            using (StreamWriter configSaver = new StreamWriter(CONFIG))
             {
                 foreach (string path in SourcePaths)
                 {
@@ -126,5 +130,25 @@ namespace BackupSoftware
                 }
             }
         }
+
+        private void SourceComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (SourcePaths.Contains(SourceComboBox.Text))
+            {
+                RemoveDirButton.Enabled = true;
+                RemoveDirButton.Visible = true;
+            }
+        }
+
+        private void RemoveDirButton_Click(object sender, EventArgs e)
+        {
+            SourcePaths.Remove(SourceComboBox.Text);
+            SourceComboBox.Items.Remove(SourceComboBox.Text);
+
+            RemoveDirButton.Visible = false;
+            RemoveDirButton.Enabled = false;
+
+        }
+
     }
 }

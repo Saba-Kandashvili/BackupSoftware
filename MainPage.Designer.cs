@@ -30,30 +30,43 @@
         {
             SourceComboBox = new ComboBox();
             DestinationTextBox = new TextBox();
+            RemoveDirButton = new Button();
             SuspendLayout();
             // 
             // SourceComboBox
             // 
             SourceComboBox.FormattingEnabled = true;
-            SourceComboBox.Location = new Point(306, 103);
+            SourceComboBox.Location = new Point(258, 171);
             SourceComboBox.Name = "SourceComboBox";
-            SourceComboBox.Size = new Size(121, 23);
+            SourceComboBox.Size = new Size(244, 23);
             SourceComboBox.TabIndex = 0;
+            SourceComboBox.SelectedIndexChanged += SourceComboBox_SelectedIndexChanged;
             SourceComboBox.KeyDown += SourceComboBox_KeyDown;
             // 
             // DestinationTextBox
             // 
-            DestinationTextBox.Location = new Point(306, 296);
+            DestinationTextBox.Location = new Point(258, 300);
             DestinationTextBox.Name = "DestinationTextBox";
-            DestinationTextBox.Size = new Size(121, 23);
+            DestinationTextBox.Size = new Size(244, 23);
             DestinationTextBox.TabIndex = 1;
             DestinationTextBox.KeyDown += DestinationTextBox_KeyDown;
+            // 
+            // RemoveDirButton
+            // 
+            RemoveDirButton.Location = new Point(218, 163);
+            RemoveDirButton.Name = "RemoveDirButton";
+            RemoveDirButton.Size = new Size(34, 36);
+            RemoveDirButton.TabIndex = 2;
+            RemoveDirButton.Text = "Del";
+            RemoveDirButton.UseVisualStyleBackColor = true;
+            RemoveDirButton.Click += RemoveDirButton_Click;
             // 
             // MainPage
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(RemoveDirButton);
             Controls.Add(DestinationTextBox);
             Controls.Add(SourceComboBox);
             Name = "MainPage";
@@ -68,5 +81,6 @@
 
         private ComboBox SourceComboBox;
         private TextBox DestinationTextBox;
+        private Button RemoveDirButton;
     }
 }
