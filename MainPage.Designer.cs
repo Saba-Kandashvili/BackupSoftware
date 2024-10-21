@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             SourceComboBox = new ComboBox();
+            DestinationTextBox = new TextBox();
             SuspendLayout();
             // 
             // SourceComboBox
@@ -40,21 +41,32 @@
             SourceComboBox.TabIndex = 0;
             SourceComboBox.KeyDown += SourceComboBox_KeyDown;
             // 
+            // DestinationTextBox
+            // 
+            DestinationTextBox.Location = new Point(306, 296);
+            DestinationTextBox.Name = "DestinationTextBox";
+            DestinationTextBox.Size = new Size(121, 23);
+            DestinationTextBox.TabIndex = 1;
+            DestinationTextBox.KeyDown += DestinationTextBox_KeyDown;
+            // 
             // MainPage
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(DestinationTextBox);
             Controls.Add(SourceComboBox);
             Name = "MainPage";
             Text = "Form1";
             FormClosing += MainPage_FormClosing;
             Load += MainPage_Load;
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
 
         private ComboBox SourceComboBox;
+        private TextBox DestinationTextBox;
     }
 }

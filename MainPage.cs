@@ -7,7 +7,7 @@ namespace BackupSoftware
             InitializeComponent();
         }
 
-        public static string CONFIG =  String.Join(@"\", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackerUpper", "init.ini");
+        public static string CONFIG = String.Join(@"\", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackerUpper", "init.ini");
         public static List<string> SourcePaths = new List<string>();
 
         private void MainPage_Load(object sender, EventArgs e)
@@ -34,7 +34,7 @@ namespace BackupSoftware
         private void MainPage_FormClosing(object sender, FormClosingEventArgs e)
         {
             SourcePaths.Clear();
-            
+
             foreach (string path in SourceComboBox.Items)
             {
                 SourcePaths.Add(path);
@@ -42,10 +42,10 @@ namespace BackupSoftware
 
             string[] readLines = File.ReadAllLines(CONFIG);
 
-            foreach(string line in readLines)
+            foreach (string line in readLines)
             {
                 int ind = SourcePaths.IndexOf(line);
-                if(ind != -1)
+                if (ind != -1)
                 {
                     SourcePaths.RemoveAt(ind);
                 }
@@ -66,7 +66,7 @@ namespace BackupSoftware
             {
                 if (SourceComboBox.Text == "")
                 {
-                    MessageBox.Show("Error", "You must enter a valid path", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("You must enter a valid path", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     SourceComboBox.Text = "";
 
                     return;
@@ -74,7 +74,7 @@ namespace BackupSoftware
 
                 if (!Directory.Exists(SourceComboBox.Text))
                 {
-                    MessageBox.Show("Error", "Directory doesn't exists.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Directory doesn't exists.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     SourceComboBox.Text = "";
 
                     return;
@@ -82,7 +82,7 @@ namespace BackupSoftware
 
                 if (SourcePaths.Contains(SourceComboBox.Text))
                 {
-                    MessageBox.Show("Error", "Directory already backed up.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Directory already backed up.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     SourceComboBox.Text = "";
 
                     return;
@@ -95,5 +95,36 @@ namespace BackupSoftware
             }
         }
 
+        private void DestinationTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                if (DestinationTextBox.Text == "")
+                {
+                    MessageBox.Show("You must enter a valid path", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    DestinationTextBox.Text = "";
+
+                    return;
+                }
+
+
+                if (!Directory.Exists(DestinationTextBox.Text))
+                {
+                    MessageBox.Show("Directory doesn't exists.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    DestinationTextBox.Text = "";
+
+                    return;
+                }
+
+
+                if (SourcePaths.Contains(DestinationTextBox.Text))
+                {
+                    MessageBox.Show("You cant backup into an already backed up directory", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    SourceComboBox.Text = "";
+
+                    return;
+                }
+            }
+        }
     }
 }
