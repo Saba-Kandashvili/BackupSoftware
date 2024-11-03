@@ -32,6 +32,7 @@
             DestinationTextBox = new TextBox();
             RemoveDirButton = new Button();
             BackupButton = new Button();
+            ResetConfig = new Button();
             SuspendLayout();
             // 
             // SourceComboBox
@@ -42,8 +43,8 @@
             SourceComboBox.Size = new Size(244, 23);
             SourceComboBox.TabIndex = 0;
             SourceComboBox.SelectedIndexChanged += SourceComboBox_SelectedIndexChanged;
-            SourceComboBox.Click += SourceComboBox_Click;
             SourceComboBox.KeyDown += SourceComboBox_KeyDown;
+            SourceComboBox.MouseDown += SourceComboBox_MouseDown;
             // 
             // DestinationTextBox
             // 
@@ -51,8 +52,8 @@
             DestinationTextBox.Name = "DestinationTextBox";
             DestinationTextBox.Size = new Size(244, 23);
             DestinationTextBox.TabIndex = 1;
-            DestinationTextBox.Click += DestinationTextBox_Click;
             DestinationTextBox.KeyDown += DestinationTextBox_KeyDown;
+            DestinationTextBox.MouseDoubleClick += DestinationTextBox_DoubleClick;
             // 
             // RemoveDirButton
             // 
@@ -74,11 +75,24 @@
             BackupButton.UseVisualStyleBackColor = true;
             BackupButton.Click += BackupButton_Click;
             // 
+            // ResetConfig
+            // 
+            ResetConfig.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            ResetConfig.ForeColor = Color.Red;
+            ResetConfig.Location = new Point(12, 385);
+            ResetConfig.Name = "ResetConfig";
+            ResetConfig.Size = new Size(77, 53);
+            ResetConfig.TabIndex = 4;
+            ResetConfig.Text = "Reset Config";
+            ResetConfig.UseVisualStyleBackColor = true;
+            ResetConfig.Click += ResetConfig_Click;
+            // 
             // MainPage
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(ResetConfig);
             Controls.Add(BackupButton);
             Controls.Add(RemoveDirButton);
             Controls.Add(DestinationTextBox);
@@ -97,5 +111,6 @@
         private TextBox DestinationTextBox;
         private Button RemoveDirButton;
         private Button BackupButton;
+        private Button ResetConfig;
     }
 }

@@ -1,3 +1,5 @@
+using System.ComponentModel;
+
 namespace BackupSoftware
 {
     public partial class MainPage : Form
@@ -227,6 +229,7 @@ namespace BackupSoftware
                 }
                 // TODO: add more validation to check if subfolder of any folder is being backed up into it's parent
                 DESTPATH = DestinationTextBox.Text;
+                MessageBox.Show(DESTPATH);
             }
         }
 
@@ -239,24 +242,35 @@ namespace BackupSoftware
             }
         }
 
-        private void SourceComboBox_Click(object sender, EventArgs e)
+        private void SourceComboBox_MouseDown(object sender, MouseEventArgs e)
         {
-            using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog())
+            if (e.Button == MouseButtons.Right)
             {
-                folderBrowserDialog.Description = "Select a Directory to Backup";
-                folderBrowserDialog.ShowNewFolderButton = true;
-
-                // Show the dialog and get the result
-                DialogResult result = folderBrowserDialog.ShowDialog();
-
-                if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(folderBrowserDialog.SelectedPath))
+                using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog())
                 {
-                    string selectedPath = folderBrowserDialog.SelectedPath;
+                    folderBrowserDialog.Description = "Select a Directory to Backup";
+                    folderBrowserDialog.ShowNewFolderButton = true;
 
-                    SourceComboBox.Text = selectedPath;
+                    DialogResult result = folderBrowserDialog.ShowDialog();
+
+                    if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(folderBrowserDialog.SelectedPath))
+                    {
+                        string selectedPath = folderBrowserDialog.SelectedPath;
+
+                        if (SourcePaths.Contains(selectedPath))
+                        {
+                            MessageBox.Show("Directory already backed up.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+
+                        SourcePaths.Add(selectedPath);
+                        SourceComboBox.Items.Add(selectedPath);  // Update ComboBox items
+                        SourceComboBox.Text = "";  // Clear the text in ComboBox
+                    }
                 }
             }
         }
+
 
         private void RemoveDirButton_Click(object sender, EventArgs e)
         {
@@ -286,16 +300,15 @@ namespace BackupSoftware
 
             if (!source.Exists)
             {
-                MessageBox.Show("source directory doesn't exist. exiting immediately to avoid a catastrophe", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Source directory doesn't exist. Exiting immediately to avoid a catastrophe", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Application.Exit();
                 return;
             }
 
-            if (!dest.Exists) // TODO: fix this
+            // Ensure destination directory exists
+            if (!dest.Exists)
             {
-                MessageBox.Show("destination directory doesn't exist. exiting immediately to avoid a catastrophe", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Application.Exit();
-                return;
+                dest.Create();  // Create the destination directory if it doesn't exist
             }
 
             // Copy all files
@@ -317,6 +330,7 @@ namespace BackupSoftware
             }
         }
 
+
         private void BackupAllSourcePaths()
         {
             try
@@ -335,7 +349,7 @@ namespace BackupSoftware
             }
         }
 
-        private void DestinationTextBox_Click(object sender, EventArgs e)
+        private void DestinationTextBox_DoubleClick(object sender, MouseEventArgs e)
         {
             using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog())
             {
@@ -351,6 +365,40 @@ namespace BackupSoftware
 
                 }
             }
+        }
+
+        private void ResetConfig_Click(object sender, EventArgs e)
+        {
+            // Show a confirmation dialog
+            DialogResult result = MessageBox.Show("Are you sure you want to reset the configuration?",
+                                                  "Confirm Reset",
+                                                  MessageBoxButtons.YesNo,
+                                                  MessageBoxIcon.Warning);
+
+            // Check if the user clicked 'Yes'
+            if (result == DialogResult.Yes)
+            {
+                // Perform the reset operation here
+                ResetConfiguration();
+                MessageBox.Show("Configuration has been reset.", "Reset Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                // If the user clicked 'No', do nothing or handle as needed
+                MessageBox.Show("Configuration reset canceled.", "Cancel", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void ResetConfiguration()
+        {
+            // Clear the contents of the existing config file
+            File.WriteAllText(CONFIG, string.Empty);
+
+            // Reset UI elements and paths
+            SourceComboBox.Items.Clear();
+            SourcePaths.Clear();
+            DestinationTextBox.Text = string.Empty;
+            DESTPATH = string.Empty;
         }
     }
 }
